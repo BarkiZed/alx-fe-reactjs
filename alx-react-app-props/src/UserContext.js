@@ -1,7 +1,7 @@
 // src/UserContext.js
 import { createContext } from 'react';
 
-export const UserContext = createContext(null);
+export const UserContext = React.createContext(n);
 
 // Optional: You can also export a custom provider if needed
 export const UserProvider = ({ children }) => {
