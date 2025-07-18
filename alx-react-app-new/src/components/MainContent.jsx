@@ -9,7 +9,7 @@ function MainContent() {
       <UserProfile 
         name="John Doe" 
         age={28} 
-        bio="Travel enthusiast and photography lover."
+        bio="I love to visit New York, Paris, and Tokyo."
       />
       <UserProfile 
         name="Jane Smith" 
