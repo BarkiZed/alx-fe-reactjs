@@ -3,15 +3,24 @@ import './App.css'
 import RecipeList from './components/RecipeList'
 import AddRecipeForm from './components/AddRecipeForm'
 import RecipeDetails from './components/RecipeDetails'
-import SearchBar from './components/SearchBar'
-import AdvancedFilters from './components/AdvancedFilters'
+import FavoritesList from './components/FavoritesList'
+import RecommendationsList from './components/RecommendationsList'
+import { useEffect } from 'react'
+import useRecipeStore from './store/recipeStore'
 
 function App() {
+  const initMockData = useRecipeStore(state => state.initMockData)
+
+  useEffect(() => {
+    initMockData()
+  }, [initMockData])
+
   return (
     <Router>
       <div className="app">
         <nav>
           <Link to="/">Home</Link>
+          <Link to="/favorites">Favorites</Link>
           <Link to="/add">Add Recipe</Link>
         </nav>
         
@@ -20,13 +29,11 @@ function App() {
         <Routes>
           <Route path="/" element={
             <>
-              <div className="search-section">
-                <SearchBar />
-                <AdvancedFilters />
-              </div>
+              <RecommendationsList />
               <RecipeList />
             </>
           } />
+          <Route path="/favorites" element={<FavoritesList />} />
           <Route path="/recipes/:id" element={<RecipeDetails />} />
           <Route path="/add" element={<AddRecipeForm />} />
         </Routes>
