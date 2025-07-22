@@ -1,7 +1,6 @@
 import { useParams } from 'react-router-dom'
 import useRecipeStore from '../store/recipeStore'
-import EditRecipeForm from './EditRecipeForm'
-import DeleteRecipeButton from './DeleteRecipeButton'
+import FavoriteButton from './FavoriteButton'
 
 const RecipeDetails = () => {
   const { id } = useParams()
@@ -12,12 +11,21 @@ const RecipeDetails = () => {
 
   return (
     <div className="recipe-details">
-      <h1>{recipe.title}</h1>
-      <p>{recipe.description}</p>
-      <div className="recipe-actions">
-        <EditRecipeForm recipe={recipe} />
-        <DeleteRecipeButton recipeId={recipe.id} />
+      <div className="recipe-header">
+        <h1>{recipe.title}</h1>
+        <FavoriteButton recipeId={recipe.id} />
       </div>
+      <p>{recipe.description}</p>
+      
+      {recipe.tags && (
+        <div className="tags">
+          {recipe.tags.map(tag => (
+            <span key={tag} className="tag">{tag}</span>
+          ))}
+        </div>
+      )}
+      
+      {/* Rest of your recipe details */}
     </div>
   )
 }
