@@ -2,56 +2,76 @@ import { create } from 'zustand'
 
 const useRecipeStore = create((set, get) => ({
   recipes: [],
-  searchTerm: '',
-  filters: {
-    ingredients: [],
-    maxTime: null,
-    minRating: null
-  },
+  favorites: [],
+  recommendations: [],
   
-  // Recipe CRUD operations
-  addRecipe: (newRecipe) => set((state) => ({
-    recipes: [...state.recipes, newRecipe]
-  })),
-  deleteRecipe: (recipeId) => set((state) => ({
-    recipes: state.recipes.filter(recipe => recipe.id !== recipeId)
-  })),
-  updateRecipe: (updatedRecipe) => set((state) => ({
-    recipes: state.recipes.map(recipe => 
-      recipe.id === updatedRecipe.id ? updatedRecipe : recipe
-    )
-  })),
-  setRecipes: (recipes) => set({ recipes }),
+  // Recipe CRUD operations (existing)
+  // ... (keep your existing addRecipe, deleteRecipe, updateRecipe functions)
   
-  // Search and filter operations
-  setSearchTerm: (term) => set({ searchTerm: term }),
-  setFilter: (filterName, value) => set((state) => ({
-    filters: { ...state.filters, [filterName]: value }
+  // Favorites functionality
+  addFavorite: (recipeId) => set(state => {
+    if (!state.favorites.includes(recipeId)) {
+      return { favorites: [...state.favorites, recipeId] }
+    }
+    return state
+  }),
+  
+  removeFavorite: (recipeId) => set(state => ({
+    favorites: state.favorites.filter(id => id !== recipeId)
   })),
   
-  // Computed filtered recipes
-  getFilteredRecipes: () => {
-    const { recipes, searchTerm, filters } = get()
-    return recipes.filter(recipe => {
-      // Search term matching
-      const matchesSearch = searchTerm === '' || 
-        recipe.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        recipe.description.toLowerCase().includes(searchTerm.toLowerCase())
-      
-      // Additional filters
-      const matchesIngredients = filters.ingredients.length === 0 ||
-        filters.ingredients.every(ing => 
-          recipe.ingredients?.includes(ing))
-      
-      const matchesTime = !filters.maxTime || 
-        (recipe.cookingTime && recipe.cookingTime <= filters.maxTime)
-      
-      const matchesRating = !filters.minRating || 
-        (recipe.rating && recipe.rating >= filters.minRating)
-      
-      return matchesSearch && matchesIngredients && matchesTime && matchesRating
-    })
-  }
+  isFavorite: (recipeId) => get().favorites.includes(recipeId),
+  
+  // Recommendations functionality
+  generateRecommendations: () => set(state => {
+    const { recipes, favorites } = state
+    
+    if (favorites.length === 0) {
+      // If no favorites, recommend popular recipes (mock implementation)
+      return { 
+        recommendations: [...recipes]
+          .sort(() => 0.5 - Math.random())
+          .slice(0, 3) 
+      }
+    }
+    
+    // Get tags from favorite recipes
+    const favoriteTags = recipes
+      .filter(recipe => favorites.includes(recipe.id))
+      .flatMap(recipe => recipe.tags || [])
+    
+    // Recommend recipes with similar tags
+    const recommended = recipes
+      .filter(recipe => 
+        !favorites.includes(recipe.id) && // Not already favorite
+        recipe.tags?.some(tag => favoriteTags.includes(tag)) // Has matching tag
+      )
+      .sort(() => 0.5 - Math.random())
+      .slice(0, 3)
+    
+    return { recommendations: recommended }
+  }),
+  
+  // Initialize with some mock data for testing
+  initMockData: () => set({
+    recipes: [
+      {
+        id: 1,
+        title: "Vegetable Pasta",
+        description: "Healthy pasta with fresh vegetables",
+        tags: ["vegetarian", "pasta", "quick"],
+        rating: 4
+      },
+      {
+        id: 2,
+        title: "Chicken Curry",
+        description: "Spicy Indian chicken curry",
+        tags: ["meat", "spicy", "indian"],
+        rating: 5
+      },
+      // Add more sample recipes...
+    ]
+  })
 }))
 
 export default useRecipeStore
