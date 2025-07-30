@@ -3,7 +3,7 @@ import { fetchUserData } from '../services/githubService';
 
 const Search = () => {
   const [username, setUsername] = useState('');
-  const [userData, setUserData] = useState(null);
+  const [users, setUsers] = useState([]); // Changed to array for multiple users
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -16,10 +16,10 @@ const Search = () => {
     
     try {
       const data = await fetchUserData(username);
-      setUserData(data);
+      setUsers([data]); // Wrap in array to use map() later
     } catch (err) {
       setError('Looks like we cant find the user');
-      setUserData(null);
+      setUsers([]);
     } finally {
       setLoading(false);
     }
@@ -39,16 +39,18 @@ const Search = () => {
 
       {loading && <p>Loading...</p>}
       {error && <p className="error">{error}</p>}
-      {userData && (
-        <div className="user-card">
-          <img src={userData.avatar_url} alt="User avatar" width="100" />
-          <h2>{userData.login}</h2>
-          <p>{userData.name || 'No name provided'}</p>
-          <a href={userData.html_url} target="_blank" rel="noopener noreferrer">
+      
+      {/* Added map() to display users */}
+      {users.map((user) => (
+        <div key={user.id} className="user-card">
+          <img src={user.avatar_url} alt="User avatar" width="100" />
+          <h2>{user.login}</h2>
+          {user.name && <p>{user.name}</p>}
+          <a href={user.html_url} target="_blank" rel="noopener noreferrer">
             View Profile
           </a>
         </div>
-      )}
+      ))}
     </div>
   );
 };
