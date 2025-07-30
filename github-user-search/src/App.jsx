@@ -1,12 +1,13 @@
-import './App.css'
+import Search from './components/Search';
+import './App.css';
 
 function App() {
   return (
     <div className="app">
       <h1>GitHub User Search</h1>
-      {/* We'll add more here later */}
+      <Search />
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
