@@ -18,7 +18,7 @@ const Search = () => {
       const data = await fetchUserData(username);
       setUserData(data);
     } catch (err) {
-      setError('User not found');
+      setError('Looks like we cant find the user');
       setUserData(null);
     } finally {
       setLoading(false);
@@ -42,8 +42,8 @@ const Search = () => {
       {userData && (
         <div className="user-card">
           <img src={userData.avatar_url} alt="User avatar" width="100" />
-          <h2>{userData.name || username}</h2>
-          <p>{userData.bio}</p>
+          <h2>{userData.login}</h2>
+          <p>{userData.name || 'No name provided'}</p>
           <a href={userData.html_url} target="_blank" rel="noopener noreferrer">
             View Profile
           </a>
