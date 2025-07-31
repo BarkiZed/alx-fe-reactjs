@@ -1,8 +1,10 @@
 import { useState } from 'react';
-import { searchUsers } from '../services/githubService';
+import { fetchUserData, searchUsers } from '../services/githubService';
 
 const Search = () => {
-  const [searchParams, setSearchParams] = useState({
+  const [searchType, setSearchType] = useState('basic'); // 'basic' or 'advanced'
+  const [basicUsername, setBasicUsername] = useState('');
+  const [advancedParams, setAdvancedParams] = useState({
     username: '',
     location: '',
     minRepos: ''
@@ -11,27 +13,16 @@ const Search = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const handleInputChange = (e) => {
-    // Properly using target.value here
-    const { name, value } = e.target;
-    setSearchParams(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
-
-  const handleSubmit = async (e) => {
+  const handleBasicSearch = async (e) => {
     e.preventDefault();
+    if (!basicUsername) return;
+
     setLoading(true);
     setError(null);
     
     try {
-      const results = await searchUsers({
-        username: searchParams.username,
-        location: searchParams.location,
-        minRepos: searchParams.minRepos
-      });
-      setUsers(results);
+      const userData = await fetchUserData(basicUsername);
+      setUsers([userData]); // Single user result as array
     } catch (err) {
       setError('Looks like we cant find the user');
       setUsers([]);
@@ -40,35 +31,85 @@ const Search = () => {
     }
   };
 
+  const handleAdvancedSearch = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const results = await searchUsers(advancedParams);
+      setUsers(results);
+    } catch (err) {
+      setError('Failed to search users');
+      setUsers([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAdvancedInputChange = (e) => {
+    const { name, value } = e.target;
+    setAdvancedParams(prev => ({ ...prev, [name]: value }));
+  };
+
   return (
     <div className="search-container">
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          name="username"
-          value={searchParams.username}
-          onChange={handleInputChange}  // Using handler with target.value
-          placeholder="Enter GitHub username"
-        />
-        <input
-          type="text"
-          name="location"
-          value={searchParams.location}
-          onChange={handleInputChange}  // Using handler with target.value
-          placeholder="Filter by location"
-        />
-        <input
-          type="number"
-          name="minRepos"
-          value={searchParams.minRepos}
-          onChange={handleInputChange}  // Using handler with target.value
-          placeholder="Minimum repositories"
-          min="0"
-        />
-        <button type="submit" disabled={loading}>
-          {loading ? 'Searching...' : 'Search'}
+      <div className="search-type-toggle">
+        <button 
+          onClick={() => setSearchType('basic')}
+          className={searchType === 'basic' ? 'active' : ''}
+        >
+          Basic Search
         </button>
-      </form>
+        <button 
+          onClick={() => setSearchType('advanced')}
+          className={searchType === 'advanced' ? 'active' : ''}
+        >
+          Advanced Search
+        </button>
+      </div>
+
+      {searchType === 'basic' ? (
+        <form onSubmit={handleBasicSearch}>
+          <input
+            type="text"
+            value={basicUsername}
+            onChange={(e) => setBasicUsername(e.target.value)}
+            placeholder="Enter GitHub username"
+          />
+          <button type="submit" disabled={loading}>
+            {loading ? 'Searching...' : 'Search'}
+          </button>
+        </form>
+      ) : (
+        <form onSubmit={handleAdvancedSearch}>
+          <input
+            type="text"
+            name="username"
+            value={advancedParams.username}
+            onChange={handleAdvancedInputChange}
+            placeholder="Username"
+          />
+          <input
+            type="text"
+            name="location"
+            value={advancedParams.location}
+            onChange={handleAdvancedInputChange}
+            placeholder="Location"
+          />
+          <input
+            type="number"
+            name="minRepos"
+            value={advancedParams.minRepos}
+            onChange={handleAdvancedInputChange}
+            placeholder="Min Repositories"
+            min="0"
+          />
+          <button type="submit" disabled={loading}>
+            {loading ? 'Searching...' : 'Search'}
+          </button>
+        </form>
+      )}
 
       {loading && <p>Loading...</p>}
       {error && <p className="error">{error}</p>}
@@ -81,6 +122,7 @@ const Search = () => {
               <h3>{user.login}</h3>
               {user.name && <p>{user.name}</p>}
               {user.location && <p>📍 {user.location}</p>}
+              {user.public_repos && <p>Repositories: {user.public_repos}</p>}
               <a 
                 href={user.html_url} 
                 target="_blank" 
