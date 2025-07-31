@@ -1,46 +1,52 @@
 import axios from 'axios';
 
-const BASE_URL = 'https://api.github.com';
+const GITHUB_API_URL = 'https://api.github.com';
 
-export const fetchUserData = async (username) => {
+export const searchUsers = async (queryParams) => {
   try {
-    const response = await axios.get(`${BASE_URL}/users/${username}`);
-    return response.data;
-  } catch (error) {
-    if (error.response?.status === 404) {
-      throw new Error('User not found');
-    }
-    throw new Error('Failed to fetch user data');
-  }
-};
+    // Construct query string from parameters
+    const queryString = Object.entries(queryParams)
+      .filter(([_, value]) => value) // Remove empty params
+      .map(([key, value]) => {
+        if (key === 'username') return value;
+        if (key === 'minRepos') return `repos:>${value}`;
+        return `${key}:${value}`;
+      })
+      .join('+');
 
-export const searchUsers = async (query, options = {}) => {
-  try {
-    const params = new URLSearchParams({ q: query });
-    if (options.location) params.append('location', options.location);
-    if (options.minRepos) params.append('repos', `>${options.minRepos}`);
-    
-    const response = await axios.get(`${BASE_URL}/search/users`, {
-      params,
-      headers: {
-        'Accept': 'application/vnd.github.v3+json'
+    // Make API request with the constructed query
+    const response = await axios.get(
+      `${GITHUB_API_URL}/search/users?q=${encodeURIComponent(queryString)}`,
+      {
+        headers: {
+          Accept: 'application/vnd.github.v3+json',
+        },
       }
-    });
-    
-    // Get detailed info for each user
+    );
+
+    // Get detailed information for each user
     const usersWithDetails = await Promise.all(
       response.data.items.map(async (user) => {
-        const userDetails = await axios.get(`${BASE_URL}/users/${user.login}`);
+        const userDetails = await axios.get(
+          `${GITHUB_API_URL}/users/${user.login}`
+        );
         return {
           ...user,
-          ...userDetails.data
+          ...userDetails.data,
         };
       })
     );
-    
+
     return usersWithDetails;
   } catch (error) {
     console.error('GitHub API error:', error);
     throw new Error('Failed to search users');
   }
 };
+
+// Example usage:
+// searchUsers({
+//   username: 'john',
+//   location: 'new york',
+//   minRepos: 5
+// })
