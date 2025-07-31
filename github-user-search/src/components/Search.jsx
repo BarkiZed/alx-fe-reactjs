@@ -1,24 +1,31 @@
 import { useState } from 'react';
-import { fetchUserData } from '../services/githubService';
+import { searchUsers } from '../services/githubService';
 
 const Search = () => {
-  const [username, setUsername] = useState('');
-  const [users, setUsers] = useState([]); // Changed to array for multiple users
+  const [searchParams, setSearchParams] = useState({
+    username: '',
+    location: '',
+    minRepos: ''
+  });
+  const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setSearchParams(prev => ({ ...prev, [name]: value }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!username) return;
-    
     setLoading(true);
     setError(null);
     
     try {
-      const data = await fetchUserData(username);
-      setUsers([data]); // Wrap in array to use map() later
+      const results = await searchUsers(searchParams);
+      setUsers(results);
     } catch (err) {
-      setError('Looks like we cant find the user');
+      setError('Looks like we cant find matching users');
       setUsers([]);
     } finally {
       setLoading(false);
@@ -27,30 +34,56 @@ const Search = () => {
 
   return (
     <div className="search-container">
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className="search-form">
         <input
           type="text"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          placeholder="Enter GitHub username"
+          name="username"
+          value={searchParams.username}
+          onChange={handleInputChange}
+          placeholder="Username"
         />
-        <button type="submit">Search</button>
+        <input
+          type="text"
+          name="location"
+          value={searchParams.location}
+          onChange={handleInputChange}
+          placeholder="Location"
+        />
+        <input
+          type="number"
+          name="minRepos"
+          value={searchParams.minRepos}
+          onChange={handleInputChange}
+          placeholder="Min Repositories"
+          min="0"
+        />
+        <button type="submit" disabled={loading}>
+          {loading ? 'Searching...' : 'Search'}
+        </button>
       </form>
 
-      {loading && <p>Loading...</p>}
-      {error && <p className="error">{error}</p>}
-      
-      {/* Added map() to display users */}
-      {users.map((user) => (
-        <div key={user.id} className="user-card">
-          <img src={user.avatar_url} alt="User avatar" width="100" />
-          <h2>{user.login}</h2>
-          {user.name && <p>{user.name}</p>}
-          <a href={user.html_url} target="_blank" rel="noopener noreferrer">
-            View Profile
-          </a>
-        </div>
-      ))}
+      {error && <p className="error-message">{error}</p>}
+
+      <div className="users-grid">
+        {users.map(user => (
+          <div key={user.id} className="user-card">
+            <img src={user.avatar_url} alt={`${user.login}'s avatar`} />
+            <div className="user-info">
+              <h3>
+                <a href={user.html_url} target="_blank" rel="noopener noreferrer">
+                  {user.login}
+                </a>
+              </h3>
+              {user.name && <p>Name: {user.name}</p>}
+              {user.location && <p>📍 {user.location}</p>}
+              {user.public_repos !== undefined && (
+                <p>Repositories: {user.public_repos}</p>
+              )}
+              {user.bio && <p className="bio">{user.bio}</p>}
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
