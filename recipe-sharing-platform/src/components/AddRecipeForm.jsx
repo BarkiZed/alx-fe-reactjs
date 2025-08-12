@@ -92,7 +92,6 @@ const AddRecipeForm = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (validateForm()) {
-      // In a real app, you would send this data to your backend API
       console.log('Form submitted:', {
         ...formData,
         ingredients: formData.ingredients.join('\n'),
@@ -105,11 +104,11 @@ const AddRecipeForm = () => {
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-2xl">
-      <h1 className="text-3xl font-bold mb-6">Add New Recipe</h1>
+      <h1 className="text-3xl font-bold mb-6 text-gray-800">Add New Recipe</h1>
       
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 rounded-lg shadow-md">
         {/* Title Field */}
-        <div>
+        <div className="bg-white p-4 rounded-lg shadow-sm">
           <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
             Recipe Title *
           </label>
@@ -119,7 +118,7 @@ const AddRecipeForm = () => {
             name="title"
             value={formData.title}
             onChange={handleInputChange}
-            className={`w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+            className={`w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm ${
               errors.title ? 'border-red-500' : 'border-gray-300'
             }`}
             placeholder="e.g., Spaghetti Carbonara"
@@ -128,7 +127,7 @@ const AddRecipeForm = () => {
         </div>
 
         {/* Summary Field */}
-        <div>
+        <div className="bg-white p-4 rounded-lg shadow-sm">
           <label htmlFor="summary" className="block text-sm font-medium text-gray-700 mb-1">
             Short Summary *
           </label>
@@ -138,7 +137,7 @@ const AddRecipeForm = () => {
             value={formData.summary}
             onChange={handleInputChange}
             rows={3}
-            className={`w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+            className={`w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm ${
               errors.summary ? 'border-red-500' : 'border-gray-300'
             }`}
             placeholder="A brief description of your recipe..."
@@ -147,7 +146,7 @@ const AddRecipeForm = () => {
         </div>
 
         {/* Image URL Field */}
-        <div>
+        <div className="bg-white p-4 rounded-lg shadow-sm">
           <label htmlFor="image" className="block text-sm font-medium text-gray-700 mb-1">
             Image URL
           </label>
@@ -157,13 +156,13 @@ const AddRecipeForm = () => {
             name="image"
             value={formData.image}
             onChange={handleInputChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm"
             placeholder="https://example.com/recipe-image.jpg"
           />
         </div>
 
         {/* Ingredients Field */}
-        <div>
+        <div className="bg-white p-4 rounded-lg shadow-sm">
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Ingredients * (Add at least 2)
           </label>
@@ -172,22 +171,22 @@ const AddRecipeForm = () => {
               type="text"
               value={currentIngredient}
               onChange={(e) => setCurrentIngredient(e.target.value)}
-              className="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm"
               placeholder="e.g., 2 cups flour"
             />
             <button
               type="button"
               onClick={addIngredient}
-              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 shadow-md hover:shadow-lg transition-shadow"
             >
               Add
             </button>
           </div>
           
           {formData.ingredients.length > 0 && (
-            <ul className="mb-2 border rounded-md divide-y">
+            <ul className="mb-2 border rounded-md divide-y shadow-inner">
               {formData.ingredients.map((ingredient, index) => (
-                <li key={index} className="flex justify-between items-center px-4 py-2">
+                <li key={index} className="flex justify-between items-center px-4 py-2 bg-gray-50 hover:bg-gray-100">
                   <span>{ingredient}</span>
                   <button
                     type="button"
@@ -204,7 +203,7 @@ const AddRecipeForm = () => {
         </div>
 
         {/* Preparation Steps Field */}
-        <div>
+        <div className="bg-white p-4 rounded-lg shadow-sm">
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Preparation Steps * (Add at least 1)
           </label>
@@ -213,22 +212,22 @@ const AddRecipeForm = () => {
               type="text"
               value={currentStep}
               onChange={(e) => setCurrentStep(e.target.value)}
-              className="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm"
               placeholder="e.g., Mix all dry ingredients"
             />
             <button
               type="button"
               onClick={addStep}
-              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 shadow-md hover:shadow-lg transition-shadow"
             >
               Add
             </button>
           </div>
           
           {formData.steps.length > 0 && (
-            <ol className="mb-2 border rounded-md divide-y list-decimal list-inside">
+            <ol className="mb-2 border rounded-md divide-y list-decimal list-inside shadow-inner">
               {formData.steps.map((step, index) => (
-                <li key={index} className="flex justify-between items-center px-4 py-2">
+                <li key={index} className="flex justify-between items-center px-4 py-2 bg-gray-50 hover:bg-gray-100">
                   <span>{step}</span>
                   <button
                     type="button"
@@ -244,17 +243,17 @@ const AddRecipeForm = () => {
           {errors.steps && <p className="mt-1 text-sm text-red-600">{errors.steps}</p>}
         </div>
 
-        <div className="flex justify-end space-x-4">
+        <div className="flex justify-end space-x-4 pt-4">
           <button
             type="button"
             onClick={() => navigate('/')}
-            className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors"
+            className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors shadow-sm hover:shadow-md"
           >
             Cancel
           </button>
           <button
             type="submit"
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors shadow-md hover:shadow-lg"
           >
             Submit Recipe
           </button>
