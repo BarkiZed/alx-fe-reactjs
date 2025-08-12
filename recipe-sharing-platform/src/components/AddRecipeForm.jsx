@@ -7,18 +7,19 @@ const AddRecipeForm = () => {
     title: '',
     summary: '',
     image: '',
-    ingredients: '',
-    instructions: ''
+    ingredients: [],
+    steps: []
   });
   const [errors, setErrors] = useState({});
+  const [currentIngredient, setCurrentIngredient] = useState('');
+  const [currentStep, setCurrentStep] = useState('');
 
-  const handleChange = (e) => {
+  const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
       [name]: value
     });
-    // Clear error when user types
     if (errors[name]) {
       setErrors({
         ...errors,
@@ -27,17 +28,62 @@ const AddRecipeForm = () => {
     }
   };
 
+  const addIngredient = () => {
+    if (currentIngredient.trim()) {
+      setFormData({
+        ...formData,
+        ingredients: [...formData.ingredients, currentIngredient.trim()]
+      });
+      setCurrentIngredient('');
+      if (errors.ingredients) {
+        setErrors({
+          ...errors,
+          ingredients: null
+        });
+      }
+    }
+  };
+
+  const removeIngredient = (index) => {
+    const newIngredients = [...formData.ingredients];
+    newIngredients.splice(index, 1);
+    setFormData({
+      ...formData,
+      ingredients: newIngredients
+    });
+  };
+
+  const addStep = () => {
+    if (currentStep.trim()) {
+      setFormData({
+        ...formData,
+        steps: [...formData.steps, currentStep.trim()]
+      });
+      setCurrentStep('');
+      if (errors.steps) {
+        setErrors({
+          ...errors,
+          steps: null
+        });
+      }
+    }
+  };
+
+  const removeStep = (index) => {
+    const newSteps = [...formData.steps];
+    newSteps.splice(index, 1);
+    setFormData({
+      ...formData,
+      steps: newSteps
+    });
+  };
+
   const validateForm = () => {
     const newErrors = {};
     if (!formData.title.trim()) newErrors.title = 'Recipe title is required';
     if (!formData.summary.trim()) newErrors.summary = 'Summary is required';
-    if (!formData.ingredients.trim()) newErrors.ingredients = 'Ingredients are required';
-    if (!formData.instructions.trim()) newErrors.instructions = 'Instructions are required';
-    
-    // Basic ingredients validation - at least 2 items
-    if (formData.ingredients.trim() && formData.ingredients.split('\n').filter(i => i.trim()).length < 2) {
-      newErrors.ingredients = 'Please enter at least 2 ingredients';
-    }
+    if (formData.ingredients.length < 2) newErrors.ingredients = 'Please add at least 2 ingredients';
+    if (formData.steps.length < 1) newErrors.steps = 'Please add at least 1 preparation step';
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -47,9 +93,13 @@ const AddRecipeForm = () => {
     e.preventDefault();
     if (validateForm()) {
       // In a real app, you would send this data to your backend API
-      console.log('Form submitted:', formData);
+      console.log('Form submitted:', {
+        ...formData,
+        ingredients: formData.ingredients.join('\n'),
+        steps: formData.steps.join('\n')
+      });
       alert('Recipe submitted successfully!');
-      navigate('/'); // Redirect to home page after submission
+      navigate('/');
     }
   };
 
@@ -68,7 +118,7 @@ const AddRecipeForm = () => {
             id="title"
             name="title"
             value={formData.title}
-            onChange={handleChange}
+            onChange={handleInputChange}
             className={`w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
               errors.title ? 'border-red-500' : 'border-gray-300'
             }`}
@@ -86,7 +136,7 @@ const AddRecipeForm = () => {
             id="summary"
             name="summary"
             value={formData.summary}
-            onChange={handleChange}
+            onChange={handleInputChange}
             rows={3}
             className={`w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
               errors.summary ? 'border-red-500' : 'border-gray-300'
@@ -106,7 +156,7 @@ const AddRecipeForm = () => {
             id="image"
             name="image"
             value={formData.image}
-            onChange={handleChange}
+            onChange={handleInputChange}
             className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             placeholder="https://example.com/recipe-image.jpg"
           />
@@ -114,40 +164,84 @@ const AddRecipeForm = () => {
 
         {/* Ingredients Field */}
         <div>
-          <label htmlFor="ingredients" className="block text-sm font-medium text-gray-700 mb-1">
-            Ingredients * (one per line)
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Ingredients * (Add at least 2)
           </label>
-          <textarea
-            id="ingredients"
-            name="ingredients"
-            value={formData.ingredients}
-            onChange={handleChange}
-            rows={5}
-            className={`w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-              errors.ingredients ? 'border-red-500' : 'border-gray-300'
-            }`}
-            placeholder="2 cups flour\n1 tsp salt\n..."
-          />
+          <div className="flex gap-2 mb-2">
+            <input
+              type="text"
+              value={currentIngredient}
+              onChange={(e) => setCurrentIngredient(e.target.value)}
+              className="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="e.g., 2 cups flour"
+            />
+            <button
+              type="button"
+              onClick={addIngredient}
+              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+            >
+              Add
+            </button>
+          </div>
+          
+          {formData.ingredients.length > 0 && (
+            <ul className="mb-2 border rounded-md divide-y">
+              {formData.ingredients.map((ingredient, index) => (
+                <li key={index} className="flex justify-between items-center px-4 py-2">
+                  <span>{ingredient}</span>
+                  <button
+                    type="button"
+                    onClick={() => removeIngredient(index)}
+                    className="text-red-500 hover:text-red-700"
+                  >
+                    ×
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
           {errors.ingredients && <p className="mt-1 text-sm text-red-600">{errors.ingredients}</p>}
         </div>
 
-        {/* Instructions Field */}
+        {/* Preparation Steps Field */}
         <div>
-          <label htmlFor="instructions" className="block text-sm font-medium text-gray-700 mb-1">
-            Preparation Steps * (one per line)
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Preparation Steps * (Add at least 1)
           </label>
-          <textarea
-            id="instructions"
-            name="instructions"
-            value={formData.instructions}
-            onChange={handleChange}
-            rows={7}
-            className={`w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-              errors.instructions ? 'border-red-500' : 'border-gray-300'
-            }`}
-            placeholder="1. Mix dry ingredients...\n2. Add wet ingredients..."
-          />
-          {errors.instructions && <p className="mt-1 text-sm text-red-600">{errors.instructions}</p>}
+          <div className="flex gap-2 mb-2">
+            <input
+              type="text"
+              value={currentStep}
+              onChange={(e) => setCurrentStep(e.target.value)}
+              className="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="e.g., Mix all dry ingredients"
+            />
+            <button
+              type="button"
+              onClick={addStep}
+              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+            >
+              Add
+            </button>
+          </div>
+          
+          {formData.steps.length > 0 && (
+            <ol className="mb-2 border rounded-md divide-y list-decimal list-inside">
+              {formData.steps.map((step, index) => (
+                <li key={index} className="flex justify-between items-center px-4 py-2">
+                  <span>{step}</span>
+                  <button
+                    type="button"
+                    onClick={() => removeStep(index)}
+                    className="text-red-500 hover:text-red-700"
+                  >
+                    ×
+                  </button>
+                </li>
+              ))}
+            </ol>
+          )}
+          {errors.steps && <p className="mt-1 text-sm text-red-600">{errors.steps}</p>}
         </div>
 
         <div className="flex justify-end space-x-4">
