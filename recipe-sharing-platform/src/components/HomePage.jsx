@@ -33,6 +33,12 @@ const HomePage = () => {
                className="inline-block bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded transition-colors duration-300">
                View Recipe
              </Link>
+              <Link 
+  to="/add-recipe"
+  className="fixed bottom-6 right-6 bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-full shadow-lg transition-all"
+>
+  + Add Recipe
+</Link>
             </div>
           </div>
         ))}
