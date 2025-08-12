@@ -1,0 +1,55 @@
+[
+  {
+    "id": 1,
+    "title": "Spaghetti Carbonara",
+    "summary": "A classic Italian pasta dish with eggs, cheese, bacon, and black pepper.",
+    "image": "https://via.placeholder.com/800x500",
+    "ingredients": [
+      "400g spaghetti",
+      "200g pancetta or guanciale, diced",
+      "4 large eggs",
+      "50g pecorino cheese, grated",
+      "50g parmesan, grated",
+      "Freshly ground black pepper",
+      "Salt"
+    ],
+    "instructions": [
+      "Bring a large pot of salted water to boil and cook spaghetti according to package instructions.",
+      "While pasta cooks, fry pancetta in a large pan until crispy.",
+      "In a bowl, whisk eggs and grated cheeses together with plenty of black pepper.",
+      "Drain pasta, reserving a cup of cooking water.",
+      "Working quickly, add hot pasta to the pancetta, then remove from heat.",
+      "Add egg mixture, tossing quickly to create a creamy sauce. Add pasta water if needed.",
+      "Serve immediately with extra grated cheese and black pepper."
+    ]
+  },
+  {
+    "id": 2,
+    "title": "Chicken Tikka Masala",
+    "summary": "Chunks of grilled chicken (tikka) cooked in a smooth buttery & creamy tomato based gravy.",
+    "image": "https://via.placeholder.com/800x500",
+    "ingredients": [
+      "500g boneless chicken, cut into cubes",
+      "1 cup yogurt",
+      "2 tbsp lemon juice",
+      "2 tsp cumin powder",
+      "2 tsp garam masala",
+      "1 tbsp ginger-garlic paste",
+      "2 tbsp vegetable oil",
+      "1 large onion, finely chopped",
+      "2 cups tomato puree",
+      "1 cup heavy cream",
+      "Fresh coriander for garnish"
+    ],
+    "instructions": [
+      "Marinate chicken with yogurt, lemon juice, cumin, garam masala, and ginger-garlic paste for at least 1 hour.",
+      "Grill or bake chicken until cooked through.",
+      "In a pan, heat oil and sauté onions until golden.",
+      "Add tomato puree and cook for 5 minutes.",
+      "Add grilled chicken pieces and simmer for 10 minutes.",
+      "Stir in heavy cream and simmer for another 5 minutes.",
+      "Garnish with fresh coriander and serve with naan or rice."
+    ]
+  }
+  // ... keep other recipes
+]
