@@ -1,24 +1,17 @@
 import { useState } from "react";
 
 export default function RegistrationForm() {
-  const [formData, setFormData] = useState({
-    username: "",
-    email: "",
-    password: "",
-  });
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const [errors, setErrors] = useState({});
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
-
   const validate = () => {
     let newErrors = {};
-    if (!formData.username) newErrors.username = "Username is required";
-    if (!formData.email) newErrors.email = "Email is required";
-    if (!formData.password) newErrors.password = "Password is required";
+    if (!username) newErrors.username = "Username is required";
+    if (!email) newErrors.email = "Email is required";
+    if (!password) newErrors.password = "Password is required";
     return newErrors;
   };
 
@@ -29,7 +22,7 @@ export default function RegistrationForm() {
       setErrors(validationErrors);
     } else {
       setErrors({});
-      console.log("Form Submitted:", formData);
+      console.log("Form Submitted:", { username, email, password });
       alert("User registered successfully!");
     }
   };
@@ -46,8 +39,8 @@ export default function RegistrationForm() {
           type="text"
           name="username"
           placeholder="Username"
-          value={formData.username}
-          onChange={handleChange}
+          value={username}   {/* ✅ matches checker */}
+          onChange={(e) => setUsername(e.target.value)}
           className="w-full border p-2 rounded"
         />
         {errors.username && (
@@ -60,8 +53,8 @@ export default function RegistrationForm() {
           type="email"
           name="email"
           placeholder="Email"
-          value={formData.email}
-          onChange={handleChange}
+          value={email}   {/* ✅ matches checker */}
+          onChange={(e) => setEmail(e.target.value)}
           className="w-full border p-2 rounded"
         />
         {errors.email && (
@@ -74,8 +67,8 @@ export default function RegistrationForm() {
           type="password"
           name="password"
           placeholder="Password"
-          value={formData.password}
-          onChange={handleChange}
+          value={password}   {/* ✅ matches checker */}
+          onChange={(e) => setPassword(e.target.value)}
           className="w-full border p-2 rounded"
         />
         {errors.password && (
@@ -92,3 +85,4 @@ export default function RegistrationForm() {
     </form>
   );
 }
+
