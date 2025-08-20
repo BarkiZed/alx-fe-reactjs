@@ -27,11 +27,5 @@
     "jest": "^30.0.5",
     "vite": "^7.1.2"
   }
-  "scripts": {
-  "dev": "vite",
-  "build": "vite build",
-  "preview": "vite preview",
-  "test": "jest"
-}
 
 }
